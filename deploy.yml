@@ -1,0 +1,49 @@
+name: Deploy Laravel Application
+
+on:
+  push:
+    branches:
+      - main # Ou 'master', dependendo da sua branch principal
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Checkout do código
+        uses: actions/checkout@v3
+
+      - name: 2. Login no GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 3. Build e Push da Imagem Docker
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./docker/php/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:latest
+
+      - name: 4. Deploy no Servidor via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /caminho/para/seu/projeto/no/servidor
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            # Adicione outras variáveis de ambiente necessárias aqui
+            
+            docker login ghcr.io -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+            docker-compose pull app
+            docker-compose up -d --force-recreate --no-deps app
+            
+            docker exec simple_php_app php artisan migrate --force
+            docker exec simple_php_app php artisan config:cache
+            docker exec simple_php_app php artisan route:cache
+            docker exec simple_php_app php artisan view:cache

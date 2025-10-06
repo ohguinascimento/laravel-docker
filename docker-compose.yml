@@ -1,0 +1,30 @@
+services:
+  # Serviço da Aplicação (PHP)
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    container_name: simple_php_app
+    working_dir: /var/www
+    # volumes: # Comentado para o teste de build de produção
+    #   - ./:/var/www
+    networks:
+      - app-network
+
+  # Serviço do Web Server (Nginx)
+  webserver:
+    image: nginx:alpine
+    container_name: simple_nginx_web
+    ports:
+      - "8000:80" # Acesse em http://localhost:8000
+    volumes:
+      - ./:/var/www
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - app-network
+    depends_on:
+      - app
+
+networks:
+  app-network:
+    driver: bridge
