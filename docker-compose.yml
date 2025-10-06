@@ -10,6 +10,8 @@ services:
     #   - ./:/var/www
     networks:
       - app-network
+    depends_on:
+      - db
 
   # Serviço do Web Server (Nginx)
   webserver:
@@ -25,6 +27,27 @@ services:
     depends_on:
       - app
 
+  # Serviço do Banco de Dados (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: simple_mysql_db
+    restart: unless-stopped
+    ports:
+      - "33069:3306" # Porta para conectar com um cliente de DB local
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  db_data:
+    driver: local
