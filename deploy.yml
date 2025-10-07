@@ -38,11 +38,14 @@ jobs:
             cd /caminho/para/seu/projeto/no/servidor
             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
             # Adicione outras variáveis de ambiente necessárias aqui
+            # Na primeira vez, você precisará rodar: ./init-letsencrypt.sh
+            # Certifique-se que o script é executável: chmod +x init-letsencrypt.sh
             
             docker login ghcr.io -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-            docker-compose pull app
-            docker-compose up -d --force-recreate --no-deps app
+            docker-compose pull # Puxa todas as imagens novas (app, nginx, etc)
+            docker-compose up -d --force-recreate --remove-orphans
             
+            # Os comandos artisan continuam os mesmos
             docker exec simple_php_app php artisan migrate --force
             docker exec simple_php_app php artisan config:cache
             docker exec simple_php_app php artisan route:cache
