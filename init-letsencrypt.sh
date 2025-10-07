@@ -6,7 +6,7 @@ if ! [ -x "$(command -v docker-compose)" ]; then
   exit 1
 fi
 
-domains=(seu-dominio.com www.seu-dominio.com) # <<< IMPORTANTE: Substitua com seus domínios
+domains=(srv1013296.hstgr.cloud) # <<< IMPORTANTE: Substitua com seus domínios
 rsa_key_size=4096
 data_path="./docker/certbot" # Caminho para os dados do Certbot
 email="seu-email@seu-dominio.com" # <<< IMPORTANTE: Adicione um e-mail válido
