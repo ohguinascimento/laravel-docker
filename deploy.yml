@@ -22,13 +22,13 @@ jobs:
             # Na primeira vez, você precisará rodar: ./init-letsencrypt.sh
             docker-compose up -d --build
             
-            # Instala as dependências do Composer dentro do container
-            # --no-interaction: Não faz perguntas interativas
-            # --optimize-autoloader: Otimiza o autoloader para produção
-            docker exec simple_php_app composer install --no-interaction --optimize-autoloader --no-dev
-
-            # Os comandos artisan continuam os mesmos
-            docker exec simple_php_app php artisan migrate --force
-            docker exec simple_php_app php artisan config:cache
-            docker exec simple_php_app php artisan route:cache
-            docker exec simple_php_app php artisan view:cache
+            # # Instala as dependências do Composer dentro do container
+            # # --no-interaction: Não faz perguntas interativas
+            # # --optimize-autoloader: Otimiza o autoloader para produção
+            # docker exec simple_php_app composer install --no-interaction --optimize-autoloader --no-dev
+            # 
+            # # Os comandos artisan continuam os mesmos
+            # docker exec simple_php_app php artisan migrate --force
+            # docker exec simple_php_app php artisan config:cache
+            # docker exec simple_php_app php artisan route:cache
+            # docker exec simple_php_app php artisan view:cache
