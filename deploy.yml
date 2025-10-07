@@ -36,15 +36,20 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /caminho/para/seu/projeto/no/servidor
+            git pull origin main # <<< ADICIONE ESTA LINHA
             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
             # Adicione outras variáveis de ambiente necessárias aqui
             # Na primeira vez, você precisará rodar: ./init-letsencrypt.sh
             # Certifique-se que o script é executável: chmod +x init-letsencrypt.sh
             
+            # Exporta as variáveis do GitHub para o ambiente do servidor
+            export GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }}
+            export GITHUB_REPOSITORY_NAME=${{ github.event.repository.name }}
+
             docker login ghcr.io -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-            docker-compose pull # Puxa todas as imagens novas (app, nginx, etc)
-            docker-compose up -d --force-recreate --remove-orphans
-            
+            docker-compose pull # Agora o docker-compose saberá qual imagem puxar
+            docker-compose up -d --force-recreate --remove-orphans # E recriar o container com a imagem correta
+
             # Os comandos artisan continuam os mesmos
             docker exec simple_php_app php artisan migrate --force
             docker exec simple_php_app php artisan config:cache
