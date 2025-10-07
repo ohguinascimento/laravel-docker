@@ -20,7 +20,8 @@ jobs:
             cd /caminho/para/seu/projeto/no/servidor
             git pull origin main
             # Na primeira vez, você precisará rodar: ./init-letsencrypt.sh
-            docker-compose up -d --build
+            docker-compose down # Garante que os containers antigos sejam removidos
+            docker-compose up -d --build # Sobe a nova versão
             
             # # Instala as dependências do Composer dentro do container
             # # --no-interaction: Não faz perguntas interativas
