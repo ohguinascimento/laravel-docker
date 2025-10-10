@@ -1,8 +1,0 @@
-vendor
-node_modules
-.env
-.git
-docker-compose.yml
-docker/
-.dockerignore
-temp
